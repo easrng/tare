@@ -1,0 +1,57 @@
+#!/bin/sh
+if [ "$BASH_SOURCE" ] && [ $0 != "$BASH_SOURCE" ]; then
+  source /dev/stdin  <<_EOF
+  echo completions
+  _tare_completions()
+  {
+    if [ "\${#COMP_WORDS[@]}" -lt 3 ]; then
+      compopt +o default
+      COMPREPLY=(\$(compgen -W "compress extract help" "\${COMP_WORDS[1]}"))
+    elif [ "\${COMP_WORDS[1]}" = "compress" ]; then
+      if [ "\${#COMP_WORDS[@]}" -eq 3 ]; then
+        if [ "\${COMP_WORDS[2]}" ]; then
+          compopt +o default
+          COMPREPLY=("\$(echo "\${COMP_WORDS[2]}" | sed -E 's/\.(t(a(r(\.(gz?)?)?)?)?)?\$//').tar.gz")
+        else
+          compopt +o default
+          COMPREPLY=()
+        fi
+      else
+        compopt -o default
+        COMPREPLY=()
+      fi
+    else
+      compopt -o default
+      COMPREPLY=()
+    fi
+  }
+  complete -F _tare_completions tare
+_EOF
+  return 0
+fi
+help(){
+  echo "tare:  an easy tar wrapper"
+  echo "usage: btar compress output.tar.gz input"
+  echo "       btar extract file.tar[.gz, .bz2, etc.]"
+}
+compress(){
+  shift
+  tar czvf "$@"
+  exit $?
+
+}
+extract(){
+  shift
+  tar xvf "$@"
+  exit $?
+}
+case "$1" in
+  help)     help;;
+  "")       help;;
+  "--help") help;;
+  "-h")     help;;
+  "-?")     help;;
+  compress) compress "$@";;
+  extract)  extract  "$@";;
+  *)        help >&2; exit 64;;
+esac
