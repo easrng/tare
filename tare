@@ -31,8 +31,8 @@ _EOF
 fi
 help(){
   echo "tare:  an easy tar wrapper"
-  echo "usage: btar compress output.tar.gz input"
-  echo "       btar extract file.tar[.gz, .bz2, etc.]"
+  echo "usage: tare compress output.tar.gz input"
+  echo "       tare extract file.tar[.gz, .bz2, etc.]"
 }
 compress(){
   shift
